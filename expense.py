@@ -1,6 +1,11 @@
 import argparse
 import json
 from rich import print
+from datetime import datetime
+
+
+current_time = datetime.now()
+create_time = current_time.strftime("%d.%m.%Y")
 
 
 def load_expenses():
@@ -38,6 +43,7 @@ parser_delete = subparsers.add_parser('delete', help='Remove existing expense')
 parser_delete.add_argument('--id', required=True, help="Expense ID to delete")
 
 args = parser.parse_args()
+next_id = max([int(key) for key in expenses.keys()], default=0) + 1
 
 if hasattr(args, 'update'):
     if args.id in expenses:
@@ -49,7 +55,7 @@ if hasattr(args, 'update'):
 # 'add' logic
 elif hasattr(args, 'description'):
     # Assign the next available ID
-    expenses[len(expenses) + 1] = {'description': args.description, 'amount': f"{args.amount}$"}
+    expenses[next_id] = {'date': create_time, 'description': args.description, 'amount': f"{args.amount}$"}
     save_expenses(expenses)
 
 # 'delete' logic
@@ -59,5 +65,5 @@ else:
         save_expenses(expenses)
     else:
         print(f"Error: Expense with ID {args.id} not found.")
-
+print(args.command)
 print(expenses)
